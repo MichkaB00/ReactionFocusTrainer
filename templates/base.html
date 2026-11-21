@@ -1,0 +1,43 @@
+{% load static %}
+<!doctype html>
+<html lang="uk">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Фокус — тренажер реакції та уваги{% endblock %}</title>
+    <link rel="icon" href="{% static 'favicon.svg' %}" type="image/svg+xml">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block scripts %}{% endblock %}
+</head>
+<body>
+    <a class="skip-link" href="#main">Перейти до вмісту</a>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a class="brand" href="{% url 'training:home' %}" aria-label="Фокус — головна">
+                <span class="brand-mark" aria-hidden="true"></span>Фокус
+            </a>
+            <nav class="navigation" aria-label="Головна навігація">
+                <a href="{% url 'training:home' %}" {% if request.resolver_match.url_name == 'home' %}aria-current="page"{% endif %}>Тренування</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'users:profile' %}" {% if request.resolver_match.url_name == 'profile' %}aria-current="page"{% endif %}>Мій кабінет</a>
+                    <form method="post" action="{% url 'users:logout' %}" aria-label="Вихід з облікового запису">
+                        {% csrf_token %}
+                        <button class="nav-button" type="submit">Вийти</button>
+                    </form>
+                {% elif request.resolver_match.url_name != 'login' and request.resolver_match.url_name != 'register' %}
+                    <a href="{% url 'users:login' %}">Увійти</a>
+                    <a class="button button-small" href="{% url 'users:register' %}">Зареєструватися</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+    <main id="main" class="container main-content">
+        {% if messages %}
+            <div role="status">
+                {% for message in messages %}<p class="message">{{ message }}</p>{% endfor %}
+            </div>
+        {% endif %}
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

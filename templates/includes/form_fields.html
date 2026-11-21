@@ -1,0 +1,16 @@
+{% if form.errors %}
+    <div class="form-errors" role="alert" tabindex="-1" autofocus>
+        {% if form.non_field_errors %}
+            {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+        {% else %}
+            <p>Перевірте виділені поля.</p>
+        {% endif %}
+    </div>
+{% endif %}
+{% for field in form %}
+    <div class="form-field">
+        {{ field.label_tag }}
+        {{ field }}
+        {% if field.errors %}<div class="field-errors">{{ field.errors }}</div>{% endif %}
+    </div>
+{% endfor %}

@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+    <section class="intro">
+        <h1>Тренажер реакції та уваги</h1>
+        <p class="lead">Виконуйте дві прості вправи, щоб тренувати швидкість реакції та концентрацію.</p>
+    </section>
+    <section aria-labelledby="modes-heading">
+        <h2 class="section-heading" id="modes-heading">Тренування</h2>
+        {% include 'includes/mode_list.html' %}
+    </section>
+{% endblock %}

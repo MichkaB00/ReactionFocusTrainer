@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}Мій кабінет — Фокус{% endblock %}
+{% block content %}
+    <div class="page-heading"><h1>Вітаємо, {{ user.first_name|default:user.username }}!</h1></div>
+    <div class="profile-grid">
+        <section class="panel" aria-labelledby="profile-heading">
+            <h2 id="profile-heading">Мій профіль</h2>
+            <dl class="profile-details">
+                <div><dt>Ім’я</dt><dd>{{ user.first_name }}</dd></div>
+                <div><dt>Прізвище</dt><dd>{{ user.last_name }}</dd></div>
+                <div><dt>Логін</dt><dd>{{ user.username }}</dd></div>
+                <div><dt>Дата реєстрації</dt><dd>{{ user.date_joined|date:'d.m.Y' }}</dd></div>
+            </dl>
+        </section>
+        <form class="panel" method="post" action="{% url 'users:profile' %}" aria-labelledby="edit-heading">
+            <h2 id="edit-heading">Редагувати профіль</h2>
+            {% csrf_token %}
+            {% include 'includes/form_fields.html' %}
+            <button class="button" type="submit">Зберегти зміни</button>
+        </form>
+    </div>
+    <section aria-labelledby="profile-modes-heading">
+        <h2 class="section-heading" id="profile-modes-heading">Тренування</h2>
+        {% include 'includes/mode_list.html' %}
+    </section>
+{% endblock %}

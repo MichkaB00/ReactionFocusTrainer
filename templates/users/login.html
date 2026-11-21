@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Вхід — Фокус{% endblock %}
+{% block content %}
+    <section class="auth-page">
+        <h1 id="login-heading">Вхід</h1>
+        <form class="panel" method="post" action="{% url 'users:login' %}" aria-labelledby="login-heading">
+            {% csrf_token %}
+            {% include 'includes/form_fields.html' %}
+            <input type="hidden" name="next" value="{{ next }}">
+            <button class="button full-width" type="submit">Увійти</button>
+        </form>
+        <p class="auth-link"><a href="{% url 'users:register' %}">Зареєструватися</a></p>
+    </section>
+{% endblock %}

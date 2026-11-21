@@ -1,0 +1,3 @@
+{% extends 'base.html' %}
+{% block title %}Сторінку не знайдено — Фокус{% endblock %}
+{% block content %}<section class="page-heading"><p class="eyebrow">Помилка 404</p><h1>Сторінку не знайдено</h1><p class="lead">Тренування може бути вимкнене або адреса вказана неправильно.</p><a class="button" href="{% url 'training:home' %}">До тренувань</a></section>{% endblock %}

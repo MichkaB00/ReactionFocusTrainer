@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ mode.name }} — Фокус{% endblock %}
+{% block scripts %}<script src="{% static 'js/reaction.js' %}" defer></script>{% endblock %}
+{% block content %}
+    <div class="training-page">
+        <a class="back-link" href="{% url 'users:profile' %}">← До кабінету</a>
+        <div class="page-heading"><h1 id="exercise-heading">{{ mode.name }}</h1><p>На зелений сигнал натисніть кнопку або пробіл.</p></div>
+        <section class="exercise panel" aria-labelledby="exercise-heading">
+            <div id="signal" class="signal" data-state="idle" aria-hidden="true"><span></span></div>
+            <div class="exercise-status" role="status" aria-live="polite" aria-atomic="true"><h2 id="status-text">Готові?</h2></div>
+            <button class="button" type="button" id="start-button" disabled>Почати</button>
+            <button class="button response-button" type="button" id="response-button" hidden>Натиснути</button>
+            <noscript><p class="field-errors">Увімкніть JavaScript у браузері, щоб пройти тренування.</p></noscript>
+        </section>
+    </div>
+{% endblock %}

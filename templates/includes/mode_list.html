@@ -1,0 +1,11 @@
+<div class="mode-grid">
+    {% for mode in modes %}
+        <article class="mode-card">
+            <h3>{{ mode.name }}</h3>
+            <p>{{ mode.description }}</p>
+            <a class="mode-link" href="{% url 'training:'|add:mode.slug %}">Відкрити тренування <span aria-hidden="true">→</span></a>
+        </article>
+    {% empty %}
+        <p>Зараз немає доступних тренувань. Спробуйте зайти пізніше.</p>
+    {% endfor %}
+</div>
