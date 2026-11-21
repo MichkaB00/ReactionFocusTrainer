@@ -35,6 +35,10 @@ function finish() {
     document.getElementById("missed-count").textContent = missed;
     summary.hidden = false;
     statusText.textContent = "Серію завершено";
+    saveResult({
+        mode: "concentration", correct_answers: correct,
+        wrong_answers: falsePresses, missed_signals: missed,
+    });
     showStart();
 }
 
@@ -79,6 +83,7 @@ function scheduleSignal() {
 
 function start() {
     if (state === "signal" || state === "gap") return;
+    clearSaveStatus();
     signals = ["green", "green", "green", "green", "green", "red", "red", "red", "red", "red"];
     for (let i = signals.length - 1; i > 0; i -= 1) {
         const j = Math.floor(Math.random() * (i + 1));

@@ -27,6 +27,7 @@ function finish(message) {
 
 function start() {
     if (state === "waiting" || state === "ready") return;
+    clearSaveStatus();
     state = "waiting";
     startButton.hidden = true;
     responseButton.hidden = false;
@@ -49,6 +50,7 @@ function respond() {
     } else if (state === "ready") {
         const elapsed = Math.round(performance.now() - startedAt);
         finish(`${elapsed} мс`);
+        saveResult({ mode: "reaction", reaction_time_ms: elapsed });
     }
 }
 

@@ -3,8 +3,10 @@ from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods
+from pymongo.errors import PyMongoError
 
 from training.models import TrainingMode
+from training.mongo import get_collection
 from .forms import ProfileForm, RegistrationForm
 
 
@@ -30,7 +32,17 @@ def profile(request):
         form.save()
         messages.success(request, "Ім’я та прізвище збережено.")
         return redirect("users:profile")
+    try:
+        history = list(get_collection().find({"user_id": request.user.id}).sort(
+            [("created_at", -1), ("_id", -1)]
+        ).limit(10))
+        history_error = False
+    except PyMongoError:
+        history = []
+        history_error = True
     return render(request, "users/profile.html", {
         "form": form,
         "modes": TrainingMode.objects.filter(is_active=True),
+        "history": history,
+        "history_error": history_error,
     })

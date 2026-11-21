@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block title %}{{ mode.name }} — Фокус{% endblock %}
-{% block scripts %}<script src="{% static 'js/concentration.js' %}" defer></script>{% endblock %}
+{% block scripts %}<script src="{% static 'js/save_result.js' %}" defer></script><script src="{% static 'js/concentration.js' %}" defer></script>{% endblock %}
 {% block content %}
     <div class="training-page">
         <a class="back-link" href="{% url 'users:profile' %}">← До кабінету</a>
@@ -10,6 +10,8 @@
             <p id="progress-text">0 / 10</p>
             <div id="signal" class="signal" data-state="idle" aria-hidden="true"><span></span></div>
             <div class="exercise-status" role="status" aria-live="polite" aria-atomic="true"><h2 id="status-text">Готові?</h2></div>
+            <form id="save-result-form" action="{% url 'training:save_result' %}" method="post" hidden>{% csrf_token %}</form>
+            <p id="save-status" role="status" aria-live="polite"></p>
             <button class="button" type="button" id="start-button" disabled>Почати</button>
             <button class="button response-button" type="button" id="response-button" hidden disabled>Натиснути</button>
             <section id="summary" class="summary" aria-labelledby="summary-heading" hidden>
