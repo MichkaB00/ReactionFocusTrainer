@@ -103,6 +103,16 @@ dd { margin: 0; overflow-wrap: anywhere; }
 .result-grid dd { font: 2rem Consolas, monospace; color: var(--blue-dark); margin-block-start: 0.5rem; }
 .skip-link { position: absolute; inset-block-start: -100px; inset-inline-start: 1rem; background: white; padding: 1rem; z-index: 10; }
 .skip-link:focus { inset-block-start: 1rem; }
+.period-filter { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-block-end: 1.5rem; }
+.period-filter .button { background: white; color: var(--blue); border-color: var(--line); }
+.period-filter .button[aria-current="true"] { background: var(--blue); color: white; }
+.statistics > section { margin-block: 1.5rem; }
+.statistics .profile-grid { margin-block-end: 1.5rem; }
+.chart-container { position: relative; height: 300px; }
+.chart-values { margin-block-start: 1rem; }
+.chart-values table { width: 100%; border-collapse: collapse; }
+.chart-values th, .chart-values td { padding: 0.5rem; border-bottom: 1px solid var(--line); text-align: left; }
+.chart-values > div { overflow-x: auto; }
 @media (max-width: 640px) {
     .container { width: calc(100% - 2rem); }
     .main-content { padding-block: 1.75rem 3rem; }

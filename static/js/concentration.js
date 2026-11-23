@@ -45,15 +45,23 @@ function finish() {
 function endSignal() {
     if (state !== "signal") return;
     clearTimeout(timer);
-    if (!answered) {
-        if (signals[completed] === "green") {
-            missed += 1;
-        } else {
+    if (signals[completed] === "green") {
+        if (answered) {
             correct += 1;
+            statusText.textContent = "Правильно";
+        } else {
+            missed += 1;
+            statusText.textContent = "Зелений сигнал пропущено";
         }
+    } else if (answered) {
+        falsePresses += 1;
+        statusText.textContent = "Помилка: червоний сигнал";
+    } else {
+        correct += 1;
+        statusText.textContent = "Правильно";
     }
     completed += 1;
-    progressText.textContent = `${completed} / 10`;
+    progressText.textContent = `Завершено: ${completed} / 10`;
     responseButton.disabled = true;
     signal.dataset.state = "idle";
     if (completed === signals.length) {
@@ -65,14 +73,13 @@ function endSignal() {
 
 function scheduleSignal() {
     state = "gap";
-    statusText.textContent = "Пауза";
     timer = setTimeout(() => {
         frame = requestAnimationFrame(() => {
             answered = false;
             state = "signal";
             const color = signals[completed];
             signal.dataset.state = color;
-            progressText.textContent = `${completed + 1} / 10`;
+            progressText.textContent = `Сигнал ${completed + 1} / 10`;
             statusText.textContent = color === "green" ? "Зелений — натисніть!" : "Червоний — не натискайте";
             responseButton.disabled = false;
             deadline = performance.now() + 1000;
@@ -99,6 +106,7 @@ function start() {
     responseButton.hidden = false;
     responseButton.disabled = true;
     signal.dataset.state = "idle";
+    statusText.textContent = "Очікуйте сигналу";
     scheduleSignal();
 }
 
@@ -111,11 +119,6 @@ function respond() {
     }
     answered = true;
     responseButton.disabled = true;
-    if (signals[completed] === "green") {
-        correct += 1;
-    } else {
-        falsePresses += 1;
-    }
 }
 
 function interrupt() {

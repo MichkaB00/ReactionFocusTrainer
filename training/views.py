@@ -11,6 +11,7 @@ from pymongo.errors import DuplicateKeyError, PyMongoError
 
 from .models import TrainingMode
 from .mongo import get_collection
+from .analytics import PERIODS, analyze_results, period_bounds
 
 
 class TrainingModeListView(ListView):
@@ -32,6 +33,30 @@ def reaction(request):
 def concentration(request):
     mode = get_object_or_404(TrainingMode, slug="concentration", is_active=True)
     return render(request, "training/concentration.html", {"mode": mode})
+
+
+@login_required
+@require_safe
+def statistics(request):
+    period = request.GET.get("period", "week")
+    if period not in PERIODS:
+        period = "week"
+    now = timezone.now()
+    previous_start, _, _ = period_bounds(period, now)
+    context = {"period": period, "periods": PERIODS, "statistics_error": False}
+    try:
+        documents = list(get_collection().find({
+            "user_id": request.user.id,
+            "created_at": {
+                "$gte": previous_start, "$lte": now,
+            },
+        }, {"_id": 0, "mode": 1, "created_at": 1, "reaction_time_ms": 1,
+            "correct_answers": 1, "wrong_answers": 1, "missed_signals": 1}))
+    except PyMongoError:
+        context["statistics_error"] = True
+    else:
+        context.update(analyze_results(documents, period, now))
+    return render(request, "training/statistics.html", context)
 
 
 @login_required

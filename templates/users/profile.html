@@ -2,6 +2,7 @@
 {% block title %}Мій кабінет — Фокус{% endblock %}
 {% block content %}
     <div class="page-heading"><h1>Вітаємо, {{ user.first_name|default:user.username }}!</h1></div>
+    <p><a class="button" href="{% url 'training:statistics' %}">Моя статистика</a></p>
     <div class="profile-grid">
         <section class="panel" aria-labelledby="profile-heading">
             <h2 id="profile-heading">Мій профіль</h2>

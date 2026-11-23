@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% block title %}Моя статистика — Фокус{% endblock %}
+{% block scripts %}
+    {% if has_data %}<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js" defer></script>{% endif %}
+{% endblock %}
+{% block content %}
+<div class="statistics">
+    <a class="back-link" href="{% url 'users:profile' %}">← До кабінету</a>
+    <div class="page-heading"><h1>Моя статистика</h1><p>Оберіть період, щоб переглянути результати тренувань.</p></div>
+    <nav class="period-filter" aria-label="Період статистики">
+        {% for key, option in periods.items %}
+            <a class="button button-small" href="?period={{ key }}" {% if period == key %}aria-current="true"{% endif %}>{{ option.0 }}</a>
+        {% endfor %}
+    </nav>
+    {% if statistics_error %}
+        <p class="form-errors" role="alert">Не вдалося завантажити статистику</p>
+    {% else %}
+        <p>Поточний період: {{ start|date:'d.m.Y H:i' }} — {{ end|date:'d.m.Y H:i' }}</p>
+        <div class="profile-grid">
+            <section class="panel">
+                <h2>Швидкість реакції</h2>
+                {% if reaction.count %}
+                    <dl class="profile-details">
+                        <div><dt>Кількість результатів</dt><dd>{{ reaction.count }}</dd></div>
+                        <div><dt>Середній час</dt><dd>{{ reaction.mean|floatformat:2 }} мс</dd></div>
+                        <div><dt>Найкращий час</dt><dd>{{ reaction.best|floatformat:2 }} мс</dd></div>
+                        <div><dt>Найгірший час</dt><dd>{{ reaction.worst|floatformat:2 }} мс</dd></div>
+                    </dl>
+                {% else %}<p>Немає результатів реакції за цей період.</p>{% endif %}
+            </section>
+            <section class="panel">
+                <h2>Концентрація уваги</h2>
+                {% if concentration.count %}
+                    <dl class="profile-details">
+                        <div><dt>Кількість тренувань</dt><dd>{{ concentration.count }}</dd></div>
+                        <div><dt>Правильні відповіді</dt><dd>{{ concentration.correct }} із {{ concentration.total }}</dd></div>
+                        <div><dt>Точність</dt><dd>{{ concentration.accuracy|floatformat:2 }} %</dd></div>
+                    </dl>
+                {% else %}<p>Немає результатів концентрації за цей період.</p>{% endif %}
+            </section>
+        </div>
+        <section class="panel">
+            <h2>Порівняння з попереднім періодом</h2>
+            <p>Попередній період: {{ previous_start|date:'d.m.Y H:i' }} — {{ start|date:'d.m.Y H:i' }}</p>
+            <h3>Середній час реакції</h3>
+            <p>Поточний: {{ reaction_comparison.current|floatformat:2|default:'—' }} мс.
+                Попередній: {{ reaction_comparison.previous|floatformat:2|default:'—' }} мс.</p>
+            {% if reaction_comparison.difference != None %}<p>Різниця: {{ reaction_comparison.difference|floatformat:2 }} мс. Менший час — кращий результат.</p>{% endif %}
+            <p>{{ reaction_comparison.message }}</p>
+            <h3>Точність концентрації</h3>
+            <p>Поточна: {{ concentration_comparison.current|floatformat:2|default:'—' }} %.
+                Попередня: {{ concentration_comparison.previous|floatformat:2|default:'—' }} %.</p>
+            {% if concentration_comparison.difference != None %}<p>Різниця: {{ concentration_comparison.difference|floatformat:2 }} відсоткових пунктів. Вища точність — кращий результат.</p>{% endif %}
+            <p>{{ concentration_comparison.message }}</p>
+        </section>
+        <section class="panel">
+            <h2 id="reaction-chart-heading">Зміна середнього часу реакції</h2>
+            {% if reaction.count %}
+                <p>Середній час {% if period == 'day' %}за годинами{% elif period == 'year' %}за місяцями{% else %}за днями{% endif %}.</p>
+                <p id="reaction-chart-status">Щоб переглянути графік, увімкніть JavaScript. Дані також доступні нижче.</p>
+                <div class="chart-container" hidden><canvas id="reaction-chart" role="img" aria-labelledby="reaction-chart-heading" aria-describedby="reaction-chart-status"></canvas></div>
+                <div class="chart-values"><div>
+                    <table><caption>Середній час реакції</caption>
+                        <thead><tr><th scope="col">Дата / час</th><th scope="col">Час, мс</th></tr></thead>
+                        <tbody>{% for label, value in reaction_chart.rows %}<tr><th scope="row">{{ label }}</th><td>{{ value|floatformat:2 }}</td></tr>{% endfor %}</tbody>
+                    </table>
+                </div></div>
+            {% else %}<p>Немає даних для графіка реакції.</p>{% endif %}
+        </section>
+        <section class="panel">
+            <h2 id="concentration-chart-heading">Точність концентрації уваги</h2>
+            {% if concentration.count %}
+                <p id="concentration-chart-status">Щоб переглянути графік, увімкніть JavaScript. Дані також доступні нижче.</p>
+                <div class="chart-container" hidden><canvas id="concentration-chart" role="img" aria-labelledby="concentration-chart-heading" aria-describedby="concentration-chart-status"></canvas></div>
+                <details class="chart-values"><summary>Значення графіка концентрації</summary><div>
+                    <table><caption>Точність відповідей</caption>
+                        <thead><tr><th scope="col">Дата / час</th><th scope="col">Точність, %</th></tr></thead>
+                        <tbody>{% for label, value in concentration_chart.rows %}<tr><th scope="row">{{ label }}</th><td>{{ value|floatformat:2 }}</td></tr>{% endfor %}</tbody>
+                    </table>
+                </div></details>
+            {% else %}<p>Немає даних для графіка концентрації.</p>{% endif %}
+        </section>
+        <section class="panel">
+            <h2>Як змінюється час реакції</h2>
+            <p>{{ trend.message }}</p>
+            {% if trend.slope != None %}
+                <p>Це загальна тенденція за результатами тренувань за обраний період.</p>
+            {% endif %}
+        </section>
+        {% if has_data %}
+            {{ reaction_chart|json_script:'reaction-chart-data' }}
+            {{ concentration_chart|json_script:'concentration-chart-data' }}
+            <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                    for (const mode of ["reaction", "concentration"]) {
+                        const canvas = document.getElementById(`${mode}-chart`);
+                        if (!canvas) continue;
+                        const status = document.getElementById(`${mode}-chart-status`);
+                        if (typeof Chart === "undefined") {
+                            status.textContent = "Не вдалося завантажити графік. Дані доступні нижче.";
+                            continue;
+                        }
+                        try {
+                            const data = JSON.parse(document.getElementById(`${mode}-chart-data`).textContent);
+                            const isReaction = mode === "reaction";
+                            canvas.parentElement.hidden = false;
+                            new Chart(canvas, {
+                                type: isReaction ? "line" : "bar",
+                                data: {
+                                    labels: data.labels,
+                                    datasets: [{
+                                        label: isReaction ? "Середній час, мс" : "Правильні відповіді, %",
+                                        data: data.values,
+                                        borderColor: "#245bcc",
+                                        backgroundColor: "#245bcc",
+                                        borderWidth: 2,
+                                        pointRadius: isReaction ? 5 : 0,
+                                        pointHoverRadius: 7,
+                                    }],
+                                },
+                                options: {
+                                    responsive: true, maintainAspectRatio: false, animation: false,
+                                    plugins: { legend: { display: false } },
+                                    scales: {
+                                        x: { offset: isReaction, title: { display: true, text: "Дата / час" } },
+                                        y: { ...(isReaction ? { beginAtZero: false } : { min: 0, max: 100 }),
+                                            title: { display: true, text: isReaction ? "Час реакції, мс" : "Точність, %" } },
+                                    },
+                                },
+                            });
+                            status.textContent = "";
+                        } catch {
+                            canvas.parentElement.hidden = true;
+                            status.textContent = "Не вдалося побудувати графік. Значення доступні нижче.";
+                        }
+                    }
+                });
+            </script>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

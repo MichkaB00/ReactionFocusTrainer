@@ -5,7 +5,7 @@
 {% block content %}
     <div class="training-page">
         <a class="back-link" href="{% url 'users:profile' %}">← До кабінету</a>
-        <div class="page-heading"><h1 id="exercise-heading">{{ mode.name }}</h1><p>Зелений — натисніть кнопку або пробіл. Червоний — не натискайте.</p></div>
+        <div class="page-heading"><h1 id="exercise-heading">{{ mode.name }}</h1><p>Зелений — натисніть кнопку або пробіл. Червоний — не натискайте. Якщо не натиснути на зелений сигнал, він зарахується як пропущений.</p></div>
         <section class="exercise panel" aria-labelledby="exercise-heading">
             <p id="progress-text">0 / 10</p>
             <div id="signal" class="signal" data-state="idle" aria-hidden="true"><span></span></div>
