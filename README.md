@@ -29,3 +29,4 @@ $env:FOCUS_MQTT_USER_ID = '1'
 Натисніть **Start Simulation** і дочекайтеся повідомлень `Wi-Fi connected.` та `MQTT connected.` у Serial Monitor. Підключення іноді займає більше 30 секунд. Потім натисніть кнопку, дочекайтесь зеленого світла і натисніть її ще раз. Оновіть особистий кабінет, щоб побачити результат в історії та статистиці.
 
 
+https://drive.google.com/file/d/1bR3Q8zyZu6Rw98O5wbLodExZKFusltOW/view?usp=sharing - відео захисту
