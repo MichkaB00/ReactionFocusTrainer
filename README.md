@@ -26,3 +26,6 @@ python -m venv .venv
 ```
 
 В активованому віртуальному середовищі можна виконати `python manage.py test`. Тести використовують тимчасову базу SQLite і не потребують запущеної MongoDB.
+
+
+https://drive.google.com/file/d/1ImK1MhD4Z5LI3iAogHezg0w8TRFs21da/view?usp=sharing - Відео захисту
